@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: hello-deployment
+spec:
+    replicas: 3
+    selector:
+       matchLabels:
+          app: hello-py-app
+    template:
+       metadata:
+          labels:
+             app: hello-py-app
+       spec:
+          containers:
+          - name: hello-py
+            image: myotsid/hello-py:v2
+            envFrom:
+              - configMapRef:
+                 name: hello-config 
+              - secretRef:
+                 name: hello-secret
+            ports:
+              - name: web 
+                containerPort: 8000
+            startupProbe:
+              httpGet:
+                port: 80
+                path: /health
+              initialDelaySeconds: 5
+              periodSeconds: 3
