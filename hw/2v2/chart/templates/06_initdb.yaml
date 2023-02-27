@@ -1,0 +1,56 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: hello-initdb
+spec:
+  ttlSecondsAfterFinished: 60
+  template:
+    metadata:
+      name: hello-initdb
+    spec:
+      restartPolicy: Never
+      initContainers:
+        - name: check-db-ready
+          image: postgres:12
+          env:
+            - name: POSTGRES_HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: POSTGRES_HOST
+                  name: hello-config
+            - name: POSTGRES_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: POSTGRES_PORT
+                  name: hello-config
+          command:
+            - sh
+            - "-c"
+            - |
+              until pg_isready -h $POSTGRES_HOST  -p  $POSTGRES_PORT;
+              do echo waiting for database; sleep 2; done;
+      containers:
+      - name: post-install-job
+        env:
+          - name: DATABASE_INIT_URI
+            valueFrom:
+              secretKeyRef:
+                key: DATABASE_INIT_URI
+                name: hello-secret
+        image: postgres:12
+        command:
+          - sh
+          - "-c"
+          - |
+            psql $DATABASE_INIT_URI <<'EOF'
+              create table if not exists users (
+                id bigserial primary key,
+                username varchar,
+                firstname varchar,
+                lastname varchar,
+                email varchar,
+                phone varchar
+              );
+              INSERT INTO users (id, username) VALUES (1, 'Vasya') ON CONFLICT (id) DO NOTHING;
+            EOF
+  backoffLimit: 2

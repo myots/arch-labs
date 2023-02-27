@@ -1,0 +1,4 @@
+---
+apiVersion: v1
+name: hello-py-app
+version: 2.1

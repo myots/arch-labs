@@ -1,0 +1,18 @@
+apiVersion: skaffold/v2beta29
+kind: Config
+metadata:
+  name: "-"
+build:
+  artifacts:
+  - image: myotsid/hello-py
+    context: hello-py
+    docker:
+      dockerfile: Dockerfile
+deploy:
+  helm:
+    releases:
+      - name: hello-py-app
+        chartPath: chart
+        setValueTemplates:
+          image.repository: "{{ .IMAGE_REPO_myotsid_hello_py }}"
+          image.tag: "{{ .IMAGE_TAG_myotsid_hello_py }}"

@@ -1,0 +1,10 @@
+---
+image:
+  repository: myotsid/hello-py
+  tag: v2.2
+
+postgres:
+  uri: cG9zdGdyZXNxbCtwc3ljb3BnMjovL215dXNlcjpwYXNzd2RAcG9zdGdyZXM6NTQzMi9teWFwcA==
+  init_uri: cG9zdGdyZXNxbDovL215dXNlcjpwYXNzd2RAcG9zdGdyZXM6NTQzMi9teWFwcA==
+  user: bXl1c2Vy
+  password: cGFzc3dk
